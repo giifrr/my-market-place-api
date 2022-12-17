@@ -52,4 +52,17 @@ RSpec.describe "Api::V1::Users", type: :request do
       end
     end
   end
+
+  describe "DELETE /delete" do
+    context "#delete action" do
+      it "should delete user" do
+        user = FactoryBot.create(:user, password: "Ini-2000-Password")
+
+        expect do
+          delete api_v1_user_path(user), as: :json
+          expect(response).to have_http_status(:no_content)
+        end.to change(User, :count).by(-1)
+      end
+    end
+  end
 end
