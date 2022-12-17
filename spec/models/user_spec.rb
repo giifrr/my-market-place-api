@@ -21,4 +21,46 @@ RSpec.describe User, type: :model do
       expect(new_user).to_not be_valid
     end
   end
+
+  describe "User username validation" do
+    let(:user) { FactoryBot.create(:user) }
+
+    context "username presence" do
+      it "valid if username present" do
+        expect(user).to be_valid
+      end
+
+      it "invalid user if username not present" do
+        user.username = nil
+        expect(user).to_not be_valid
+      end
+    end
+
+    context "username length" do
+      it "valid if username length greater than 4 and less than 21 (5 <= username <= 20) " do
+        expect(user).to be_valid
+      end
+
+      it "invalid if username length less than 5" do
+        user.username = "a" * 4
+        expect(user).to_not be_valid
+      end
+
+      it "invalid if username length greater than 20" do
+        user.username = "a" * 21
+        expect(user).to_not be_valid
+      end
+    end
+
+    context "username uniqueness" do
+      it "valid if username uniq" do
+        expect(user).to be_valid
+      end
+
+      it "invalid if username not uniq" do
+        new_user = FactoryBot.build(:user, email: "test@ex.com", username: user.username)
+        expect(new_user).to_not be_valid
+      end
+    end
+  end
 end
