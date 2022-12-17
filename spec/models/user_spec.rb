@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe User, type: :model do
 
   describe "User email validation" do
-    let(:user) { FactoryBot.build(:user) }
+    let(:user) { FactoryBot.create(:user, password: "Ini-2000-Password") }
 
     it "should have valid email" do
       expect(user).to be_valid
@@ -15,15 +15,14 @@ RSpec.describe User, type: :model do
     end
 
     it "invalid if email has already been taken" do
-      user = FactoryBot.create(:user)
-      new_user = User.new(email: user.email)
+      new_user = User.new(email: user.email, password: "Ini-2000-Password")
 
       expect(new_user).to_not be_valid
     end
   end
 
   describe "User username validation" do
-    let(:user) { FactoryBot.create(:user) }
+    let(:user) { FactoryBot.create(:user, password: "Ini-2000-Password") }
 
     context "username presence" do
       it "valid if username present" do
@@ -58,8 +57,39 @@ RSpec.describe User, type: :model do
       end
 
       it "invalid if username not uniq" do
-        new_user = FactoryBot.build(:user, email: "test@ex.com", username: user.username)
+        new_user = FactoryBot.build(:user, email: "test@ex.com", username: user.username, password: "Ini-2000-Password")
         expect(new_user).to_not be_valid
+      end
+    end
+  end
+
+  describe "User  password validation" do
+    let(:user) { FactoryBot.build(:user) }
+
+    context "format password validation" do
+      it "valid if password is valid" do
+        user.password = "Ini-2000-Password"
+        expect(user).to be_valid
+      end
+
+      it "invalid if password is invalid" do
+        user.password = "abcd" # user password don't have uppercase, special characters, and numbers
+        expect(user).to_not be_valid
+
+        user.password = "Abcd-" # user password don't  special characters and numbers
+        expect(user).to_not be_valid
+      end
+    end
+
+    context "length password validation" do
+      it "valid if password length greater than 5 and less than 20" do
+        user.password = "Ini-2000-Password"
+        expect(user).to be_valid
+      end
+
+      it "invalid if password length less than 6" do
+        user.password = "I-2pP"
+        expect(user).to_not be_valid
       end
     end
   end
