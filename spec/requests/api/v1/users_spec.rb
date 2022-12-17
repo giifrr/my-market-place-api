@@ -34,4 +34,22 @@ RSpec.describe "Api::V1::Users", type: :request do
       end
     end
   end
+
+  describe "PATCH /update" do
+    let(:user) { FactoryBot.create(:user, password: "Ini-2000-Password") }
+
+    context "#update action" do
+      it "should update user" do
+        patch api_v1_user_path(user), params: { user: { email: "initest@g.com", password: "Ini-2000-Pw" } }, as: :json # just change user email
+
+        expect(response).to have_http_status(:success)
+      end
+
+      it "should forbid update user" do
+        patch api_v1_user_path(user), params: { user: { email: "initest.com", password: "Ini-2000-Pw" } }, as: :json # just change user email but invalid email
+
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+  end
 end
