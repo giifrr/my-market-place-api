@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe User, type: :model do
 
-  describe "User email validation" do
+  describe "email validation" do
     let(:user) { FactoryBot.create(:user, password: "Ini-2000-Password") }
 
     it "should have valid email" do
@@ -21,7 +21,7 @@ RSpec.describe User, type: :model do
     end
   end
 
-  describe "User username validation" do
+  describe "username validation" do
     let(:user) { FactoryBot.create(:user, password: "Ini-2000-Password") }
 
     context "username presence" do
@@ -63,7 +63,7 @@ RSpec.describe User, type: :model do
     end
   end
 
-  describe "User  password validation" do
+  describe "password validation" do
     let(:user) { FactoryBot.build(:user) }
 
     context "format password validation" do
@@ -91,6 +91,14 @@ RSpec.describe User, type: :model do
         user.password = "I-2pP"
         expect(user).to_not be_valid
       end
+    end
+  end
+
+  describe "firs_name adn last_name validation" do
+    let(:user) { FactoryBot.create(:user, first_name: nil, last_name: nil, password: "Ini-2000-Pw") }
+
+    it "first_name should be Anonymous by default" do
+      expect(user.first_name).to eq("Anonymous")
     end
   end
 end
