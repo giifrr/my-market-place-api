@@ -7,9 +7,8 @@ RSpec.describe "Api::V1::Users", type: :request do
     context "#show action" do
       it "should show user" do
         get api_v1_user_path(user), as: :json
-        json_response = JSON.parse(response.body)
 
-        expect(json_response['data']['attributes']['email']).to eq(user.email)
+        expect(response_json['data']['attributes']['email']).to eq(user.email)
         expect(response).to have_http_status(:success)
       end
     end
@@ -23,10 +22,7 @@ RSpec.describe "Api::V1::Users", type: :request do
         end.to change(User, :count).by(1)
 
         expect(response).to have_http_status(:created)
-
-        json_response = JSON.parse(response.body)
-
-        expect(json_response['data']['attributes']['email']).to eq('test@example.com')
+        expect(response_json['data']['attributes']['email']).to eq('test@example.com')
       end
 
       it "should not create a user if invalid user" do
