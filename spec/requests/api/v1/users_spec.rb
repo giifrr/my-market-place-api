@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe "Api::V1::Users", type: :request do
+  let(:json_response) { JSON.parse(response.body) }
+
   describe "GET /index" do
     let(:user) { FactoryBot.create(:user, password: "Ini-2000-Password") }
 
@@ -8,7 +10,7 @@ RSpec.describe "Api::V1::Users", type: :request do
       it "should show user" do
         get api_v1_user_path(user), as: :json
 
-        expect(response_json['data']['attributes']['email']).to eq(user.email)
+        expect(json_response['data']['attributes']['email']).to eq(user.email)
         expect(response).to have_http_status(:success)
       end
     end
@@ -22,7 +24,7 @@ RSpec.describe "Api::V1::Users", type: :request do
         end.to change(User, :count).by(1)
 
         expect(response).to have_http_status(:created)
-        expect(response_json['data']['attributes']['email']).to eq('test@example.com')
+        expect(json_response['data']['attributes']['email']).to eq('test@example.com')
       end
 
       it "should not create a user if invalid user" do
