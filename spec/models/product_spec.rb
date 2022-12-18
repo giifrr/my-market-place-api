@@ -5,12 +5,12 @@ RSpec.describe Product, type: :model do
     let(:product) { FactoryBot.build(:product) }
 
     context "when length product" do
-      it "valid product if length product greater than 3 and less than 101" do
+      it "greater than 3 and less than 101 then valid" do
         product.name = "PS 5"
         expect(product).to be_valid
       end
 
-      it "invalid product if length product greater than 100 or less than 3" do
+      it "greater than 100 or less than 3 then invalid" do
         product.name = "PS"
         expect(product).to_not be_valid
 
@@ -21,12 +21,12 @@ RSpec.describe Product, type: :model do
 
     describe "product price validation" do
       context "when product price" do
-        it "valid if product price not negative" do
+        it "not negative then valid" do
           product.price = 100
           expect(product).to be_valid
         end
 
-        it "invalid if product price negative" do
+        it "price negative then invalid" do
           product.price = -1
           expect(product).to_not be_valid
         end
