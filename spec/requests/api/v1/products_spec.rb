@@ -46,4 +46,26 @@ RSpec.describe 'Api::V1::Products', type: :request do
       end
     end
   end
+
+  describe 'PATCH /api/v1/product/:id' do
+    context 'when update product' do
+      it "should update product if valid product" do
+        patch api_v1_product_path(@product), params: { product: { name: 'update-name' } }, headers: { Authorization: JsonWebToken.encode(user_id: @product.user.id) }, as: :json
+
+        expect(response).to have_http_status(:success)
+      end
+
+      it "should not update product if invalid product" do
+        patch api_v1_product_path(@product), params: { product: { name: nil } }, headers: { Authorization: JsonWebToken.encode(user_id: @product.user.id) }, as: :json
+
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it "should forbid update product for unlogged" do
+        patch api_v1_product_path(@product), params: { product: { name: nil } }, as: :json
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+  end
 end
