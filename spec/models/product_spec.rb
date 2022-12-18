@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Product, type: :model do
-  describe "product name" do
+  describe "product name validation" do
     let(:product) { FactoryBot.build(:product) }
 
     context "when length product" do
@@ -16,6 +16,20 @@ RSpec.describe Product, type: :model do
 
         product.name = "P"*101
         expect(product).to_not be_valid
+      end
+    end
+
+    describe "product price validation" do
+      context "when product price" do
+        it "valid if product price not negative" do
+          product.price = 100
+          expect(product).to be_valid
+        end
+
+        it "invalid if product price negative" do
+          product.price = -1
+          expect(product).to_not be_valid
+        end
       end
     end
   end
