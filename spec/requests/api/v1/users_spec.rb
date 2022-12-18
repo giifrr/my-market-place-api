@@ -9,7 +9,6 @@ RSpec.describe 'Api::V1::Users', type: :request do
     context '#show action' do
       it 'should show user' do
         get api_v1_user_path(user), as: :json
-
         expect(response_json['data']['attributes']['email']).to eq(user.email)
         expect(response).to have_http_status(:success)
       end
