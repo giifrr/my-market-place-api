@@ -1,8 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe "Api::V1::Users", type: :request do
-  let(:json_response) { JSON.parse(response.body) }
-
   describe "GET /index" do
     let(:user) { FactoryBot.create(:user, password: "Ini-2000-Password") }
 
@@ -10,7 +8,7 @@ RSpec.describe "Api::V1::Users", type: :request do
       it "should show user" do
         get api_v1_user_path(user), as: :json
 
-        expect(json_response['data']['attributes']['email']).to eq(user.email)
+        expect(response_json['data']['attributes']['email']).to eq(user.email)
         expect(response).to have_http_status(:success)
       end
     end
@@ -24,7 +22,7 @@ RSpec.describe "Api::V1::Users", type: :request do
         end.to change(User, :count).by(1)
 
         expect(response).to have_http_status(:created)
-        expect(json_response['data']['attributes']['email']).to eq('test@example.com')
+        expect(response_json['data']['attributes']['email']).to eq('test@example.com')
       end
 
       it "should not create a user if invalid user" do
@@ -42,13 +40,19 @@ RSpec.describe "Api::V1::Users", type: :request do
 
     context "#update action" do
       it "should update user" do
-        patch api_v1_user_path(user), params: { user: { email: "initest@g.com", password: "Ini-2000-Pw" } }, as: :json # just change user email
+        patch api_v1_user_path(user), params: { user: { email: "initest@g.com", password: "Ini-2000-Pw" } }, headers: {Authorization: JsonWebToken.encode(user_id: user.id) }, as: :json # just change user email
 
         expect(response).to have_http_status(:success)
       end
 
-      it "should forbid update user" do
+      it "should forbid update user for unlogged" do
         patch api_v1_user_path(user), params: { user: { email: "initest.com", password: "Ini-2000-Pw" } }, as: :json # just change user email but invalid email
+
+        expect(response).to have_http_status(:forbidden)
+      end
+
+      it "should not update user for invalid user" do
+        patch api_v1_user_path(user), params: { user: { email: "initest.com", password: "Ini-2000-Pw" } }, headers: { Authorization: JsonWebToken.encode(user_id: user.id) }, as: :json # just change user email but invalid email
 
         expect(response).to have_http_status(:unprocessable_entity)
       end
@@ -61,9 +65,31 @@ RSpec.describe "Api::V1::Users", type: :request do
         user = FactoryBot.create(:user, password: "Ini-2000-Password")
 
         expect do
-          delete api_v1_user_path(user), as: :json
+          delete api_v1_user_path(user), headers: { Authorization: JsonWebToken.encode(user_id: user.id) }, as: :json
+
           expect(response).to have_http_status(:no_content)
         end.to change(User, :count).by(-1)
+      end
+
+      it "should forbid delete user for unlogged" do
+        user = FactoryBot.create(:user, password: "Ini-2000-Password")
+
+        expect do
+          delete api_v1_user_path(user), as: :json
+
+          expect(response).to have_http_status(:forbidden)
+        end.to change(User, :count).by(0)
+      end
+
+      it "should forbid delete user if not owner" do
+        user = FactoryBot.create(:user, password: "Ini-2000-Password")
+        user2 = FactoryBot.create(:user2, password: "Abc-123")
+
+        expect do
+          delete api_v1_user_path(user), headers: { Authorization: JsonWebToken.encode(user_id: user2.id) }, as: :json
+        end.to change(User, :count).by(0)
+
+        expect(response).to have_http_status(:forbidden)
       end
     end
   end

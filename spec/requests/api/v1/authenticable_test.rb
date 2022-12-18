@@ -16,7 +16,7 @@ RSpec.describe "Api::V1:Authenticable", type: :request do
     @authentication = MockController.new
   end
 
-  describe "GET user" do
+  describe "Log in" do
     let(:user) { FactoryBot.create(:user, password: "Ini-2000-Password") }
 
     context "Authorization" do

@@ -7,6 +7,14 @@ FactoryBot.define do
     last_name { "Al Anshar" }
   end
 
+  factory :user2, parent: :user do
+    email { "apaaja@gmail.com" }
+    username { "apaajaya" }
+    password_digest { "#{BCrypt::Password.create('Ini-2000-Password')}"}
+    first_name { "Beko" }
+    last_name { "Stalin" }
+  end
+
   factory :invalid_user, parent: :user do
     email { nil }
     username { nil }
