@@ -2,5 +2,6 @@
 
 class ProductSerializer
   include JSONAPI::Serializer
-  attributes
+  attributes :name, :price, :description, :published
+  belongs_to :user
 end

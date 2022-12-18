@@ -2,6 +2,7 @@
 
 class User < ApplicationRecord
   has_secure_password
+  has_many :products, dependent: :destroy
 
   after_save :set_default_name
 
