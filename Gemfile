@@ -55,3 +55,4 @@ end
 
 gem 'jsonapi-serializer'
 gem 'jwt'
+gem 'ransack'
