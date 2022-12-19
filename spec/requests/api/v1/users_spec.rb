@@ -3,13 +3,18 @@
 require 'rails_helper'
 
 RSpec.describe 'Api::V1::Users', type: :request do
-  describe 'GET /index' do
-    let(:user) { FactoryBot.create(:user, password: 'Ini-2000-Password') }
+  before do
+    @user, @user2 = create_list(:user, 2)
+    product_1, product_2, product_3 = create_list(:product, 3)
+  end
 
+  describe 'GET /index' do
     context '#show action' do
-      it 'should show user' do
-        get api_v1_user_path(user), as: :json
-        expect(response_json['data']['attributes']['email']).to eq(user.email)
+      it 'should show user and their relationships' do
+        get api_v1_user_path(@user), as: :json
+        expect(response_json['data']['attributes']['email']).to eq(@user.email)
+        expect(response_json.dig('included', 0, 'attributes', 'name')).to eq(@user.products.first.name)
+        expect(response_json['included'].count).to eq(@user.products.count)
         expect(response).to have_http_status(:success)
       end
     end
@@ -39,23 +44,21 @@ RSpec.describe 'Api::V1::Users', type: :request do
   end
 
   describe 'PATCH /update' do
-    let(:user) { FactoryBot.create(:user, password: 'Ini-2000-Password') }
-
     context '#update action' do
       it 'should update user' do
-        patch api_v1_user_path(user), params: { user: { email: 'initest@g.com', password: 'Ini-2000-Pw' } }, headers: { Authorization: JsonWebToken.encode(user_id: user.id) }, as: :json # just change user email
+        patch api_v1_user_path(@user), params: { user: { email: 'initest@g.com', password: 'Ini-2000-Pw' } }, headers: { Authorization: JsonWebToken.encode(user_id: @user.id) }, as: :json # just change user email
 
         expect(response).to have_http_status(:success)
       end
 
       it 'should forbid update user for unlogged' do
-        patch api_v1_user_path(user), params: { user: { email: 'initest.com', password: 'Ini-2000-Pw' } }, as: :json # just change user email but invalid email
+        patch api_v1_user_path(@user), params: { user: { email: 'initest.com', password: 'Ini-2000-Pw' } }, as: :json # just change user email but invalid email
 
         expect(response).to have_http_status(:forbidden)
       end
 
       it 'should not update user for invalid user' do
-        patch api_v1_user_path(user), params: { user: { email: 'initest.com', password: 'Ini-2000-Pw' } }, headers: { Authorization: JsonWebToken.encode(user_id: user.id) }, as: :json # just change user email but invalid email
+        patch api_v1_user_path(@user), params: { user: { email: 'initest.com', password: 'Ini-2000-Pw' } }, headers: { Authorization: JsonWebToken.encode(user_id: @user.id) }, as: :json # just change user email but invalid email
 
         expect(response).to have_http_status(:unprocessable_entity)
       end
@@ -65,31 +68,24 @@ RSpec.describe 'Api::V1::Users', type: :request do
   describe 'DELETE /delete' do
     context '#delete action' do
       it 'should delete user' do
-        user = FactoryBot.create(:user, password: 'Ini-2000-Password')
-
         expect do
-          delete api_v1_user_path(user), headers: { Authorization: JsonWebToken.encode(user_id: user.id) }, as: :json
+          delete api_v1_user_path(@user), headers: { Authorization: JsonWebToken.encode(user_id: @user.id) }, as: :json
 
           expect(response).to have_http_status(:no_content)
         end.to change(User, :count).by(-1)
       end
 
       it 'should forbid delete user for unlogged' do
-        user = FactoryBot.create(:user, password: 'Ini-2000-Password')
-
         expect do
-          delete api_v1_user_path(user), as: :json
+          delete api_v1_user_path(@user), as: :json
 
           expect(response).to have_http_status(:forbidden)
         end.to change(User, :count).by(0)
       end
 
       it 'should forbid delete user if not owner' do
-        user = FactoryBot.create(:user, password: 'Ini-2000-Password')
-        user2 = FactoryBot.create(:user2, password: 'Abc-123')
-
         expect do
-          delete api_v1_user_path(user), headers: { Authorization: JsonWebToken.encode(user_id: user2.id) }, as: :json
+          delete api_v1_user_path(@user), headers: { Authorization: JsonWebToken.encode(user_id: @user2.id) }, as: :json
         end.to change(User, :count).by(0)
 
         expect(response).to have_http_status(:forbidden)
