@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe Product, type: :model do
   describe 'product name validation' do
-    let(:product) { FactoryBot.build(:product) }
+    let(:product) { build(:product, user: create(:user)) }
 
     context 'when length product' do
       it 'greater than 3 and less than 101 then valid' do
