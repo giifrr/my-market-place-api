@@ -34,5 +34,16 @@ RSpec.describe Product, type: :model do
         end
       end
     end
+
+    describe "search product" do
+        it "finds a searched product by name" do
+          @user, @user2 = create_list(:user, 2)
+          @product_1, @product_2, @product_3 = create_list(:product, 3)
+          params = { q: "Product"}
+          @q = Product.ransack(params[:q])
+          @result = @q.result(distinct: true)
+          expect(@result).to include(@product_1)
+        end
+    end
   end
 end
