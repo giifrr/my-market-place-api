@@ -2,8 +2,10 @@ require 'rails_helper'
 
 RSpec.describe "Api::V1::Orders", type: :request do
   before do
-    @user = create(:user, password: "Ini-123-Pw")
+    @user = create(:user2)
+    @product = create(:product)
     @order = create(:order, user: @user)
+    @placement = create(:placement, product: @product, order: @order)
   end
 
   describe "GET /index" do
@@ -17,6 +19,15 @@ RSpec.describe "Api::V1::Orders", type: :request do
 
       expect(response).to have_http_status(:success)
       expect(@order.user.orders.count).to eq(response_json.dig("data").count)
+    end
+  end
+
+  describe "GET #show" do
+    it "should show spesific order product" do
+      get api_v1_order_path(@order), headers: { Authorization: JsonWebToken.encode(user_id: @order.user.id)}, as: :json
+
+      expect(response).to have_http_status(:success)
+      expect(@order.products.first.name).to eq(response_json.dig("included", 0, "attributes", "name"))
     end
   end
 end
