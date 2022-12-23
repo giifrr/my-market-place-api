@@ -11,13 +11,14 @@ class Order < ApplicationRecord
     self.total = products.map(&:price).sum
   end
 
+  # this method will build the placement obejcts and once we trigger the save method for the order everything will be inserted into the database
   def build_placements_with_product_ids_and_quantities(product_ids_and_quantities)
     product_ids_and_quantities.each do |product_id_and_quantity|
       placement = placements.build(
         product_id: product_id_and_quantity[:product_id],
         quantity: product_id_and_quantity[:quantity]
       )
-      binding.break
+
       yield placement if block_given?
     end
   end
