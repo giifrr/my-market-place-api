@@ -4,7 +4,7 @@ RSpec.describe "Api::V1::Orders", type: :request do
   before do
     @user = create(:user2)
     @product = create(:product)
-    @order = create(:order, user: @user)
+    @order = create(:order, user: @user, product_ids: [@product.id])
     @placement = create(:placement, product: @product, order: @order)
     @order_params = { order: { product_ids: [@product.id], total: 100 } }
   end
