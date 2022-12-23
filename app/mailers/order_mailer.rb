@@ -5,9 +5,12 @@ class OrderMailer < ApplicationMailer
   #
   #   en.order_mailer.send_confirmation.subject
   #
-  def send_confirmation
-    @greeting = "Hi"
+  default from: 'no-reply@mymarketplace.com'
 
-    mail to: "to@example.org"
+  def send_confirmation(order)
+    @order = order
+    @user = @order.user
+
+    mail to: @user.email, subject: 'Order Confirmation'
   end
 end
