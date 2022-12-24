@@ -8,6 +8,15 @@ FactoryBot.define do
     description { Faker::Lorem.sentences(number: 1) }
     published { false }
     quantity { 10 }
-    user { User.first }
+    user
+  end
+
+  factory :product1, parent: :product do
+    name { "product1" }
+    price { 10 }
+    description { "string"}
+    published { false }
+    quantity { 5 }
+    user1
   end
 end

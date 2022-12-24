@@ -4,7 +4,6 @@ require 'rails_helper'
 
 RSpec.describe 'Api::V1::Products', type: :request do
   before do
-    @user, @user2 = create_list(:user, 2)
     @product_1, @product_2, @product_3 = create_list(:product, 3)
   end
 
@@ -74,7 +73,7 @@ RSpec.describe 'Api::V1::Products', type: :request do
 
       it 'should not update product if not owner' do
         patch api_v1_product_path(@product_1), params: { product: { name: 'Product not found' } },
-                                               headers: { Authorization: JsonWebToken.encode(user_id: @user2.id) }, as: :json
+                                               headers: { Authorization: JsonWebToken.encode(user_id: create(:user1)) }, as: :json
 
         expect(response).to have_http_status(:forbidden)
       end
@@ -109,7 +108,7 @@ RSpec.describe 'Api::V1::Products', type: :request do
       it 'should not delete product if not owner' do
         expect do
           delete api_v1_product_path(@product_1),
-                 headers: { Authorization: JsonWebToken.encode(user_id: @user2.id) }, as: :json
+                 headers: { Authorization: JsonWebToken.encode(user_id: create(:user1)) }, as: :json
         end.to change(Product, :count).by(0)
 
         expect(response).to have_http_status(:forbidden)
