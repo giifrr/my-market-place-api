@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# note this product is associated by first user, so all of the products is associated with first user
+# NOTE: this product is associated by first user, so all of the products is associated with first user
 FactoryBot.define do
   factory :product do
     sequence(:name) { |n| "Product #{n}" }
@@ -12,11 +12,11 @@ FactoryBot.define do
   end
 
   factory :product1, parent: :product do
-    name { "product1" }
+    name { 'product1' }
     price { 10 }
-    description { "string"}
+    description { 'string' }
     published { false }
     quantity { 5 }
-    user1
+    user { create(:user1) }
   end
 end

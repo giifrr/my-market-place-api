@@ -35,25 +35,25 @@ RSpec.describe Product, type: :model do
       end
     end
 
-    describe "search product" do
+    describe 'search product' do
       before do
-        @user, @user2 = create_list(:user, 2)
-        @product_1, @product_2, @product_3 = create_list(:product, 3)
+        @user = create(:user, products: create_list(:product, 3))
+        @user2 = create(:user, products: create_list(:product, 2))
+        @product = @user.products.first
       end
 
-      it "finds a searched product by name" do
-        params = { q: "Product"}
+      it 'finds a searched product by name' do
+        params = { q: { product_name_cont: @product.name.to_s } }
         @q = Product.ransack(params[:q])
         @result = @q.result(distinct: true)
-        expect(@result).to include(@product_1)
+        expect(@result).to include(@product)
       end
 
-      it "finds a searched product by username" do
-        # note in this example all of the product is searched with first user
-        params = { q:  "#{User.first.username}" }
+      it 'finds a searched product by username' do
+        params = { q: { user_username_cont: @user.username.to_s } }
         @q = Product.ransack(params[:q])
         @result = @q.result.includes(:user)
-        expect(@result).to eq(User.first.products)
+        expect(@result).to eq(@user.products)
       end
     end
   end

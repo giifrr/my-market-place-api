@@ -4,8 +4,8 @@ require 'rails_helper'
 
 RSpec.describe 'Api::V1::Users', type: :request do
   before do
-    @user, @user2 = create_list(:user, 2)
     product_1, product_2, product_3 = create_list(:product, 3)
+    @user = create(:user1, products: [product_1, product_2, product_3])
   end
 
   describe 'GET /index' do
@@ -84,8 +84,11 @@ RSpec.describe 'Api::V1::Users', type: :request do
       end
 
       it 'should forbid delete user if not owner' do
+        another_user = create(:user)
+
         expect do
-          delete api_v1_user_path(@user), headers: { Authorization: JsonWebToken.encode(user_id: @user2.id) }, as: :json
+          delete api_v1_user_path(@user), headers: { Authorization: JsonWebToken.encode(user_id: another_user.id) },
+                                          as: :json
         end.to change(User, :count).by(0)
 
         expect(response).to have_http_status(:forbidden)

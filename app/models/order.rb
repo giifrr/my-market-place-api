@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Order < ApplicationRecord
   before_validation :set_total
 
@@ -19,6 +21,7 @@ class Order < ApplicationRecord
         quantity: product_id_and_quantity[:quantity]
       )
 
+      placement.product.quantity -= placement.quantity
       yield placement if block_given?
     end
   end
