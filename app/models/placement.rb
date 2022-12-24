@@ -5,6 +5,7 @@ class Placement < ApplicationRecord
   after_save :decrement_product_quantity
 
   def decrement_product_quantity
+    binding.break
     product.decrement!(:quantity, quantity)
   end
 end

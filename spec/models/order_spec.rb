@@ -11,7 +11,6 @@ RSpec.describe Order, type: :model do
     order.products << @product1
     order.products << @product2
     order.save
-
     expect(@product1.price + @product2.price).to eq(order.total)
   end
 
