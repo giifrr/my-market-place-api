@@ -7,6 +7,7 @@ FactoryBot.define do
     price { Faker::Commerce.price(range: 1..10) }
     description { Faker::Lorem.sentences(number: 1) }
     published { false }
+    quantity { 10 }
     user { User.first }
   end
 end
