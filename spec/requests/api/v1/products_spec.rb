@@ -7,10 +7,13 @@ RSpec.describe 'Api::V1::Products', type: :request do
     @product_1, @product_2, @product_3 = create_list(:product, 3)
   end
 
-  describe 'GET /api/v1/products' do
+  describe 'GET #index' do
     it 'should get list products' do
       get api_v1_products_path, as: :json
-      expect(response_json['data'].length).to eq(Product.all.length)
+      expect(response_json.dig(:links, :first)).to_not be_nil
+      expect(response_json.dig(:links, :last)).to_not be_nil
+      expect(response_json.dig(:links, :prev)).to_not be_nil
+      expect(response_json.dig(:links, :next)).to_not be_nil
       expect(response).to have_http_status(:success)
     end
   end

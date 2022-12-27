@@ -8,8 +8,15 @@ module Api
       before_action :check_owner, only: %i[update destroy]
 
       def index
-        @products = Product.all
-        options = { inlcude: [:user] }
+        @products = Product.page(params[:page]).per(params[:per_page])
+        options = {
+          links: {
+            first: api_v1_products_path(page: 1),
+            last: api_v1_products_path(page: @products.total_pages),
+            prev: api_v1_products_path(page: @products.prev_page),
+            next: api_v1_products_path(page: @products.next_page),
+          }
+        }
         render json: ProductSerializer.new(@products, options).serializable_hash, status: :ok
       end
 
