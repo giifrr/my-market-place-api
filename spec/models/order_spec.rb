@@ -17,4 +17,10 @@ RSpec.describe Order, type: :model do
       @order.save
     end.to change(Placement, :count).by(2)
   end
+
+  it 'should not create order if product not fit' do
+    @order.placements << Placement.new(product_id: @product1.id, quantity: @product1.quantity + 1)
+
+    expect(@order).to_not be_valid
+  end
 end

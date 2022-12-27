@@ -5,9 +5,6 @@ require 'rails_helper'
 RSpec.describe 'Api::V1::Orders', type: :request do
   before do
     @product1, @product2 = create_list(:product, 2)
-    @order = create(:order1, products: [@product1, @product2])
-    @placement = create(:placement, order: @order, product: @product1)
-    @placement = create(:placement, order: @order, product: @product2)
     @order_params = {
       order: {
         product_ids_and_quantities:
@@ -17,6 +14,8 @@ RSpec.describe 'Api::V1::Orders', type: :request do
         ]
       }
     }
+    @order = Order.create(user: create(:user))
+    @order.build_placements_with_product_ids_and_quantities(@order_params[:order][:product_ids_and_quantities])
   end
 
   describe 'GET /index' do
@@ -27,7 +26,6 @@ RSpec.describe 'Api::V1::Orders', type: :request do
 
     it 'should show order list' do
       get api_v1_orders_path, headers: { Authorization: JsonWebToken.encode(user_id: @order.user.id) }, as: :json
-
       expect(response).to have_http_status(:success)
       expect(@order.user.orders.count).to eq(response_json['data'].count)
     end
@@ -38,7 +36,7 @@ RSpec.describe 'Api::V1::Orders', type: :request do
       get api_v1_order_path(@order), headers: { Authorization: JsonWebToken.encode(user_id: @order.user.id) }, as: :json
 
       expect(response).to have_http_status(:success)
-      expect(@order.products.first.name).to eq(response_json.dig('included', 0, 'attributes', 'name'))
+      expect(@order.placements.first.product.name).to eq(response_json.dig('included', 0, 'attributes', 'name'))
     end
   end
 

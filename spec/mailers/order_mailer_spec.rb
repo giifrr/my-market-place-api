@@ -4,10 +4,18 @@ require 'rails_helper'
 
 RSpec.describe OrderMailer, type: :mailer do
   before do
-    @user = create(:user, password: 'Ini-123')
-    @product = create(:product, user: create(:user))
-    @order = create(:order, user: create(:user, password: 'Ini-123'), product_ids: [@product.id])
-    @placement = create(:placement, product: @product, order: @order)
+    @user = create(:user)
+    @product = create(:product)
+    @order_params = {
+      order: {
+        product_ids_and_quantities:
+        [
+          { product_id: @product.id, quantity: 2 }
+        ]
+      }
+    }
+    @order = Order.create(user: @user)
+    @order.build_placements_with_product_ids_and_quantities(@order_params[:order][:product_ids_and_quantities])
   end
 
   describe 'send_confirmation' do
@@ -16,7 +24,6 @@ RSpec.describe OrderMailer, type: :mailer do
       expect('Order Confirmation').to eq(mail.subject)
       expect([@order.user.email]).to eq(mail.to)
       expect(['no-reply@mymarketplace.com']).to eq(mail.from)
-
       expect(mail.body.encoded).to match("Order: ##{@order.id}")
     end
   end
