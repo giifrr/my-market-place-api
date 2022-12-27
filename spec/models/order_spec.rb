@@ -23,4 +23,15 @@ RSpec.describe Order, type: :model do
 
     expect(@order).to_not be_valid
   end
+
+  it 'should set total' do
+    @order.placements = [
+      Placement.new(product_id: @product1.id, quantity: 2),
+      Placement.new(product_id: @product2.id, quantity: 3)
+    ]
+
+    @order.set_total
+    expected_total = (@product1.price * 2) + (@product2.price * 3)
+    expect(expected_total).to eq(@order.total)
+  end
 end
