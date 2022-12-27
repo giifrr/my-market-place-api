@@ -21,7 +21,7 @@ RSpec.describe 'Api::V1::Products', type: :request do
   describe 'GET /api/v1/product/id' do
     it 'should show product' do
       get api_v1_product_path(@product_1), as: :json
-      product = response_json.dig('data', 'attributes', 'name')
+      product = response_json.dig(:data, :attributes, :name)
 
       expect(product).to eq(@product_1.name)
     end

@@ -9,7 +9,7 @@ RSpec.describe 'Api::V1::Tokens', type: :request do
 
       it 'should get token' do
         post api_v1_tokens_path, params: { user: { email: user.email, password: user.password } }, as: :json
-        expect(response_json['token']).to_not be_empty
+        expect(response_json[:token]).to_not be_empty
       end
 
       it 'should get unauthorized if user not found' do

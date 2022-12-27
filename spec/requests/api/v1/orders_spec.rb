@@ -40,7 +40,7 @@ RSpec.describe 'Api::V1::Orders', type: :request do
       get api_v1_order_path(@order), headers: { Authorization: JsonWebToken.encode(user_id: @order.user.id) }, as: :json
 
       expect(response).to have_http_status(:success)
-      expect(@order.placements.first.product.name).to eq(response_json.dig('included', 0, 'attributes', 'name'))
+      expect(@order.placements.first.product.name).to eq(response_json.dig(:included, 0, :attributes, :name))
     end
   end
 
