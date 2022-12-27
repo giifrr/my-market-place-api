@@ -10,10 +10,7 @@ RSpec.describe 'Api::V1::Products', type: :request do
   describe 'GET #index' do
     it 'should get list products' do
       get api_v1_products_path, as: :json
-      expect(response_json.dig(:links, :first)).to_not be_nil
-      expect(response_json.dig(:links, :last)).to_not be_nil
-      expect(response_json.dig(:links, :prev)).to_not be_nil
-      expect(response_json.dig(:links, :next)).to_not be_nil
+      response_json_is_paginate
       expect(response).to have_http_status(:success)
     end
   end

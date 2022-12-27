@@ -3,18 +3,12 @@
 module Api
   module V1
     class OrdersController < ApplicationController
+      include Paginable
       before_action :check_login
 
       def index
         @orders = current_user.orders.page(params[:current_page]).per(params[:per_page])
-        options = {
-          links: {
-            first: api_v1_products_path(page: 1),
-            last: api_v1_products_path(page: @orders.total_pages),
-            prev: api_v1_products_path(page: @orders.prev_page),
-            next: api_v1_products_path(page: @orders.next_page),
-          }
-        }
+        options = get_links_serializer_options('api_v1_orders_path', @orders)
         render json: OrderSerializer.new(@orders, options).serializable_hash, status: :ok
       end
 

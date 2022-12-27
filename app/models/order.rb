@@ -11,7 +11,7 @@ class Order < ApplicationRecord
   validates :total, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
   def set_total
-    self.total = self.placements.map{ |placement| placement.quantity * placement.product.price}.sum
+    self.total = placements.map { |placement| placement.quantity * placement.product.price }.sum
   end
 
   # this method will build the placement obejcts and once we trigger the save method for the order everything will be inserted into the database

@@ -3,20 +3,14 @@
 module Api
   module V1
     class ProductsController < ApplicationController
+      include Paginable
       before_action :check_login, only: %i[create update destroy]
       before_action :set_product, only: %i[show update destroy]
       before_action :check_owner, only: %i[update destroy]
 
       def index
         @products = Product.page(params[:page]).per(params[:per_page])
-        options = {
-          links: {
-            first: api_v1_products_path(page: 1),
-            last: api_v1_products_path(page: @products.total_pages),
-            prev: api_v1_products_path(page: @products.prev_page),
-            next: api_v1_products_path(page: @products.next_page),
-          }
-        }
+        options = get_links_serializer_options('api_v1_products_path', @products)
         render json: ProductSerializer.new(@products, options).serializable_hash, status: :ok
       end
 
