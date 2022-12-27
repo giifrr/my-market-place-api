@@ -6,8 +6,16 @@ module Api
       before_action :check_login
 
       def index
-        @orders = current_user.orders
-        render json: OrderSerializer.new(@orders).serializable_hash, status: :ok
+        @orders = current_user.orders.page(params[:current_page]).per(params[:per_page])
+        options = {
+          links: {
+            first: api_v1_products_path(page: 1),
+            last: api_v1_products_path(page: @orders.total_pages),
+            prev: api_v1_products_path(page: @orders.prev_page),
+            next: api_v1_products_path(page: @orders.next_page),
+          }
+        }
+        render json: OrderSerializer.new(@orders, options).serializable_hash, status: :ok
       end
 
       def show

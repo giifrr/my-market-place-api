@@ -27,7 +27,11 @@ RSpec.describe 'Api::V1::Orders', type: :request do
     it 'should show order list' do
       get api_v1_orders_path, headers: { Authorization: JsonWebToken.encode(user_id: @order.user.id) }, as: :json
       expect(response).to have_http_status(:success)
-      expect(@order.user.orders.count).to eq(response_json['data'].count)
+      expect(@order.user.orders.count).to eq(response_json[:data].count)
+      expect(response_json.dig(:links, :first)).to_not be_nil
+      expect(response_json.dig(:links, :last)).to_not be_nil
+      expect(response_json.dig(:links, :prev)).to_not be_nil
+      expect(response_json.dig(:links, :next)).to_not be_nil
     end
   end
 
