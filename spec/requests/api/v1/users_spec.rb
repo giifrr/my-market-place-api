@@ -8,7 +8,7 @@ RSpec.describe 'Api::V1::Users', type: :request do
     @user = create(:user1, products: [product_1, product_2, product_3])
   end
 
-  describe 'GET /index' do
+  describe 'GET #show' do
     context '#show action' do
       it 'should show user and their relationships' do
         get api_v1_user_path(@user), as: :json
